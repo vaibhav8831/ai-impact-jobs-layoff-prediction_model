@@ -1,19 +1,33 @@
-from sklearn import preprocessing
-
 from src.data_ingation import data_loader
-from src.data_preproces import preprocessing
+from src.data_modelbuilding import train_model
+import src.modelevolation as evaluation
 
 
 def main():
+
+    # Load data
     df = data_loader()
-    print(f"Dataset loaded successfully. Shape: {df.shape}")
-    print(df.head())
 
-    X_train,X_test,y_train,y_test = preprocessing(df)
-    print(f"Training set: X={X_train.shape}, y={y_train.shape}")
-    print(f"Testing set: X={X_test.shape}, y={y_test.shape}")
-    
+    # Train model
+    model_pipeline, X_test, y_test, y_pred, xgb_pipeline, xgb_pred = train_model(df)
+
+    print("Model training completed.")
+    print("Test samples:", len(X_test))
+    print("Predictions:", y_pred[:10])
+    print("XGBoost predictions:", xgb_pred[:10])
+
+    print("Random Forest evaluation:")
+    evaluation.evaluate_model(
+        y_test,
+        y_pred
+    )
+
+    print("XGBoost evaluation:")
+    evaluation.evaluate_model(
+        y_test,
+        xgb_pred
+    )
 
 
-
+if __name__ == "__main__":
     main()

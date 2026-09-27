@@ -1,55 +1,83 @@
-# step 2 : Data Preprocessing
-
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.impute import SimpleImputer
+import sklearn.model_selection
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, RobustScaler
 
 
 def preprocessing(df):
-    """Split the data and fit a preprocessing/model pipeline.
-
-    Returns the train/test partitions and predictions for the test partition.
     """
-    if 'layoff_risk' not in df.columns:
-        raise ValueError("DataFrame must contain a 'layoff_risk' column")
+    Clean data, split into train/test sets,
+    and create the preprocessing pipeline.
+    """
 
+    # Work on a copy so the original dataframe is not modified
+    df = df.copy()
+
+    # Remove duplicate rows
     df = df.drop_duplicates()
 
-  # separate x and y 
-  x = df.drop('layoff_risk', axis=1)
-  y = df['layoff_risk']
+    # Remove unnecessary columns
+    df = df.drop(
+        columns=["Age", "AI_Adoption_Level"],
+        errors="ignore"
+    )
 
-  # identify categorical and numerical columns
-  categorical_cols = x.select_dtypes(include=['object']).columns.tolist()
-  numerical_cols = x.select_dtypes(exclude=['object']).columns.tolist()
+    # Separate X and y
+    X = df.drop(columns=["Layoff_Risk"])
+    y = df["Layoff_Risk"]
 
-  X_train, X_test, y_train, y_test = train_test_split(
-      x, y, test_size=0.2, random_state=1
-  )
+    # Identify numerical and categorical columns
+    numerical_data = X.select_dtypes(
+        include=["int64", "float64"]
+    ).columns.tolist()
 
-  numerical_pipeline = Pipeline(steps=[
-      ('imputer', SimpleImputer(strategy='median'))
-  ])
-  categorical_pipeline = Pipeline(steps=[
-      ('imputer', SimpleImputer(strategy='most_frequent')),
-      ('encoder', OneHotEncoder(drop='first', handle_unknown='ignore'))
-  ])
-  preprocessor = ColumnTransformer(transformers=[
-      ('numerical', numerical_pipeline, numerical_cols),
-      ('categorical', categorical_pipeline, categorical_cols)
-  ])
-  model_pipeline = Pipeline(steps=[
-      ('preprocessor', preprocessor),
-      ('model', RandomForestClassifier(
-          n_estimators=50, random_state=1, n_jobs=-1
-      ))
-  ])
+    categorical_data = X.select_dtypes(
+        include=["object", "category"]
+    ).columns.tolist()
 
-  model_pipeline.fit(X_train, y_train)
-  y_pred = model_pipeline.predict(X_test)
+    # Train-test split
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
+        X,
+        y,
+        test_size=0.20,
+        random_state=1,
+        stratify=y
+    )
 
-  return X_train,X_test,y_train,y_test
+    # Numerical preprocessing
+    numerical_pipeline = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", RobustScaler())
+        ]
+    )
+
+    # Categorical preprocessing
+    categorical_pipeline = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="most_frequent")),
+            (
+                "encoder",
+                OneHotEncoder(
+                    drop="first",
+                    handle_unknown="ignore",
+                    sparse_output=True
+                )
+            )
+        ]
+    )
+
+    # Combine numerical and categorical preprocessing
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("numerical",
+            numerical_pipeline,
+            numerical_data),
+            ("categorical",
+            categorical_pipeline,
+            categorical_data)
+        ]
+    )
+
+    return X_train, X_test, y_train, y_test, preprocessor
