@@ -84,6 +84,8 @@ def train_model(df):
     # Predict cluster for test data
     cluster_pred = clustering_pipeline.predict(X_test)
 
+    df['cluster'] = pd.DataFrame(kmeans.predict(X_test))
+
 
     return (
         model_pipeline,
@@ -95,7 +97,3 @@ def train_model(df):
         clustering_pipeline,
         cluster_pred,
     )
-
-
-import pickle 
-pickle.dump(train_model, open('model.pkl', 'wb'))
