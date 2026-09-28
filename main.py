@@ -9,12 +9,22 @@ def main():
     df = data_loader()
 
     # Train model
-    model_pipeline, X_test, y_test, y_pred, xgb_pipeline, xgb_pred = train_model(df)
+    (
+        model_pipeline,
+        X_test,
+        y_test,
+        y_pred,
+        xgb_pipeline,
+        xgb_pred,
+        clustering_pipeline,
+        cluster_pred,
+    ) = train_model(df)
 
     print("Model training completed.")
     print("Test samples:", len(X_test))
     print("Predictions:", y_pred[:10])
     print("XGBoost predictions:", xgb_pred[:10])
+    print("K-means clusters:", cluster_pred[:10])
 
     print("Random Forest evaluation:")
     evaluation.evaluate_model(

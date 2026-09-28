@@ -1,7 +1,9 @@
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.cluster import KMeans
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
+import pickle
 
 from src.data_preproces import preprocessing
 
@@ -31,6 +33,8 @@ def train_model(df):
     # Prediction
     y_pred = model_pipeline.predict(X_test)
 
+    with open("model.pkl", "wb") as model_file:
+        pickle.dump(model_pipeline, model_file)
 
     xgb_model = XGBClassifier(
         n_estimators=200,
@@ -58,4 +62,40 @@ def train_model(df):
     # XGBoost prediction
     xgb_pred = label_encoder.inverse_transform(xgb_pipeline.predict(X_test))
 
-    return model_pipeline, X_test, y_test, y_pred,xgb_pipeline, xgb_pred
+    
+    # 4. K-MEANS CLUSTERING PIPELINE
+
+    kmeans_model = KMeans(
+        n_clusters=3,
+        random_state=1,
+        n_init=10
+    )
+
+    clustering_pipeline = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", kmeans_model)
+        ]
+    )
+
+    # Train clustering model
+    clustering_pipeline.fit(X_train)
+
+    # Predict cluster for test data
+    cluster_pred = clustering_pipeline.predict(X_test)
+
+
+    return (
+        model_pipeline,
+        X_test,
+        y_test,
+        y_pred,
+        xgb_pipeline,
+        xgb_pred,
+        clustering_pipeline,
+        cluster_pred,
+    )
+
+
+import pickle 
+pickle.dump(train_model, open('model.pkl', 'wb'))
