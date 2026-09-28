@@ -84,16 +84,14 @@ def train_model(df):
     # Predict cluster for test data
     cluster_pred = clustering_pipeline.predict(X_test)
 
-    df['cluster'] = pd.DataFrame(kmeans.predict(X_test))
-
-
     return (
         model_pipeline,
+        xgb_pipeline,
+        clustering_pipeline,
+        label_encoder,
         X_test,
         y_test,
         y_pred,
-        xgb_pipeline,
         xgb_pred,
-        clustering_pipeline,
         cluster_pred,
     )
