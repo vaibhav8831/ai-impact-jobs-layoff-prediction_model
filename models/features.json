@@ -1,0 +1,56 @@
+{
+  "columns": [
+    {
+      "name": "Education_Level",
+      "dtype": "str"
+    },
+    {
+      "name": "Years_of_Experience",
+      "dtype": "int64"
+    },
+    {
+      "name": "Industry",
+      "dtype": "str"
+    },
+    {
+      "name": "Job_Role",
+      "dtype": "str"
+    },
+    {
+      "name": "Company_Size",
+      "dtype": "str"
+    },
+    {
+      "name": "Job_Level",
+      "dtype": "str"
+    },
+    {
+      "name": "Routine_Task_Percentage",
+      "dtype": "int64"
+    },
+    {
+      "name": "Creativity_Requirement",
+      "dtype": "int64"
+    },
+    {
+      "name": "Human_Interaction_Level",
+      "dtype": "int64"
+    },
+    {
+      "name": "Number_of_AI_Tools_Used",
+      "dtype": "int64"
+    },
+    {
+      "name": "AI_Usage_Hours_Per_Week",
+      "dtype": "int64"
+    },
+    {
+      "name": "Tasks_Automated_Percentage",
+      "dtype": "int64"
+    },
+    {
+      "name": "AI_Training_Hours",
+      "dtype": "int64"
+    }
+  ]
+}

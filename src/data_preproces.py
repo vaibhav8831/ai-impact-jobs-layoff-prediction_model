@@ -24,8 +24,8 @@ def preprocessing(df):
     )
 
     # Separate X and y
-    X = df.drop(columns=["Layoff_Risk"])
-    y = df["Layoff_Risk"]
+    X = df.drop(columns=["Layoff_Risk"])  # seen data
+    y = df["Layoff_Risk"]                  # unseen data
 
     # Identify numerical and categorical columns
     numerical_data = X.select_dtypes(
@@ -33,7 +33,7 @@ def preprocessing(df):
     ).columns.tolist()
 
     categorical_data = X.select_dtypes(
-        include=["object", "category"]
+        include=["object", "string", "category"]
     ).columns.tolist()
 
     # Train-test split

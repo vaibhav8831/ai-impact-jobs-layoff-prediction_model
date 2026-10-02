@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Impact on Jobs - Employee Career Risk Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0F8B8D"/><path d="M8 22V14m5 8V9m5 13v-6m5 6V12" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <div>
+        <h1>AI Impact on Jobs</h1>
+        <p>Employee Career Risk Assessment</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <p class="notice">A self-assessment for learning purposes. It is not a decision tool for employers and does not predict what will actually happen to your job.</p>
+
+    <form id="assess-form" novalidate>
+      <section>
+        <h2>Employee details</h2>
+        <div class="grid">
+          {% for key, f in fields.items() if f.kind == 'number' %}
+          <div class="field">
+            <label for="{{ key }}">{{ f.label }}</label>
+            <small id="{{ key }}-hint">{{ f.hint }}</small>
+            <input type="number" id="{{ key }}" name="{{ key }}" inputmode="decimal"
+                   min="{{ f.min }}" max="{{ f.max }}" step="{{ f.step }}"
+                   data-label="{{ f.label }}" aria-describedby="{{ key }}-hint {{ key }}-err">
+            <span class="err" id="{{ key }}-err" role="alert"></span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <h2>Role and skills profile</h2>
+        <div class="grid">
+          {% for key, f in fields.items() if f.kind == 'range' %}
+          <div class="field">
+            <label for="{{ key }}">{{ f.label }}</label>
+            <small id="{{ key }}-hint">{{ f.hint }}</small>
+            <div class="slider">
+              <input type="range" id="{{ key }}" name="{{ key }}" min="{{ f.min }}" max="{{ f.max }}"
+                     step="{{ f.step }}" value="50" data-label="{{ f.label }}"
+                     aria-describedby="{{ key }}-hint {{ key }}-err">
+              <output for="{{ key }}">50</output>
+            </div>
+            <span class="err" id="{{ key }}-err" role="alert"></span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <div id="form-error" class="banner" role="alert" hidden></div>
+
+      <div class="actions">
+        <button type="submit" id="analyze-btn" class="primary">
+          <span class="spinner" hidden></span>
+          <span class="btn-text">Analyze My AI Job Impact</span>
+        </button>
+        <button type="button" id="reset-btn" class="secondary">Reset</button>
+      </div>
+    </form>
+
+    <section id="results" hidden aria-live="polite">
+      <h2>Your results</h2>
+      <div class="grid results-grid">
+        <article class="card">
+          <h3>Layoff Risk Prediction</h3>
+          <p class="big" id="res-layoff">-</p>
+          <p class="sub">Risk probability: <strong id="res-prob">-</strong></p>
+          <div class="bar" role="progressbar" aria-label="Risk probability" aria-valuemin="0" aria-valuemax="100"><span id="prob-bar"></span></div>
+          <p class="sub">An estimate from a model, not a certainty.</p>
+        </article>
+        <article class="card">
+          <h3>AI Impact Risk</h3>
+          <p class="big"><span class="badge" id="res-level">-</span></p>
+          <p class="sub" id="res-message"></p>
+        </article>
+        <article class="card">
+          <h3>Career Risk Score</h3>
+          <p class="big"><span id="res-score">-</span><span class="of"> / 100</span></p>
+          <div class="bar"><span id="score-bar"></span></div>
+          <p class="sub">A model-generated indicator, not a guaranteed outcome.</p>
+        </article>
+      </div>
+
+      <div class="panel">
+        <h3>Why this result?</h3>
+        <ul id="res-factors"></ul>
+        <p class="sub">These describe your inputs. They do not prove what caused the prediction.</p>
+      </div>
+
+      <div class="panel" id="reco" hidden>
+        <h3>Ways to build career resilience</h3>
+        <ul>
+          <li>Build AI-related skills, such as using AI tools in your daily tasks.</li>
+          <li>Complete training that is relevant to your role.</li>
+          <li>Strengthen your technical skills.</li>
+          <li>Develop deeper domain expertise.</li>
+          <li>Learn the tools used in your field.</li>
+          <li>Get comfortable working in AI-assisted workflows.</li>
+        </ul>
+        <p class="sub">These are general suggestions. They do not guarantee you will avoid a layoff.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>For education and self-assessment only. Results come from machine learning models and can be wrong.</footer>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
